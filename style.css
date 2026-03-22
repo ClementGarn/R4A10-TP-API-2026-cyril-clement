@@ -1,0 +1,109 @@
+@import url('https://fonts.cdnfonts.com/css/bender');
+
+body {
+    justify-content: center;
+    margin: 0;
+    font-family: 'Bender', sans-serif;
+    background-color: var(--color-gunmetal);
+    color: var(--color-gold-one);
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.search-box{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-block: 10px;
+}
+
+.search-box label{
+    white-space: nowrap;
+}
+
+.search-box input {
+    border: 2px solid var(--color-gold-two);
+    padding: 10px;
+    width: 300px;
+    background-color: var(--color-gunmetal-dark);
+    color: var(--color-gold-one);
+}
+
+.search-box input:focus{
+    border-color: var(--color-gold-one);
+}
+
+.search-box button{
+    background-color: var(--color-gold-two);
+    color: var(--color-gold-one);
+    border: none;
+    border-radius:5px;
+    cursor: pointer;
+    font-family: 'Bender', sans-serif;
+    padding: 10px 13px;
+    /*margin: 0;*/
+}
+
+header{
+    width: 100%;
+    background-color: var(--color-black-light);
+}
+
+.navbar{
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.title{
+    margin: 0;
+}
+
+.favbutton{
+    background-color: var(--color-gunmetal-dark);
+    color: var(--color-gold-one);
+    border: none;
+    border-radius:5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: 'Bender', sans-serif;
+}
+
+.item-list {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--color-gold-two);
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.item img {
+    margin-left: 20px;
+    flex-shrink: 0;
+}
+
+.item h2 {
+    margin-bottom: 8px;
+}
+

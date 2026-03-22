@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<link href="https://fonts.cdnfonts.com/css/bender" rel="stylesheet">
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tarkov item tracker</title>
+    <script type="text/javascript" src="script.js"></script>
+    <link rel="stylesheet" href="colors.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<header>
+    <div class="navbar">
+        <h1 class="title"> Tarkov item tracker </h1>
+        <button class = "favbutton">
+            Favoris
+        </button>
+    </div>
+</header>
+<body>
+<div class="container">
+<div class="search-box">
+    <label for="searchInput">item name</label>
+    <input id="searchInput" placeholder="Nom de l'item..." class="search-input">
+    <button onclick="search()" >Rechercher</button>
+    <button id="favoriteBtn" onclick="toggle_fav()" disabled>☆</button>
+</div>
+<div id="results" class="item-list"></div>
+</div>
+</body>
+</html>
