@@ -10,6 +10,7 @@ document.querySelector(".favbutton").addEventListener("click", () => {
     display_favorites();
     panel.classList.toggle("open");
 });
+
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("searchInput");
 
@@ -58,10 +59,44 @@ function toggle_fav() {
     } else {
         favorites.push(value);
         save_fav(favorites);
+
+        preload_item_image(value)
     }
 
     update_fav();
     display_favorites();
+}
+
+const preloadedImages = new Set();
+
+function preload_item_image(name) {
+    if (preloadedImages.has(name)) return;
+
+    fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            query: `{
+                item(gameMode: regular, lang: en, normalizedName: "${name}") {
+                    image512pxLink
+                }
+            }`
+        })
+    })
+        .then(res => res.json())
+        .then(data => {
+            const item = data.data.item;
+            if (!item || !item.image512pxLink) return;
+
+            const link = document.createElement("link");
+            link.rel = "preload";
+            link.as = "image";
+            link.href = item.image512pxLink;
+
+            document.head.appendChild(link);
+            preloadedImages.add(name);
+        })
+        .catch(err => console.error(err));
 }
 
 function display_favorites() {

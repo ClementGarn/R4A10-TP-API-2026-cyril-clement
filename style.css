@@ -106,12 +106,6 @@ header{
     margin-bottom: 8px;
 }
 
-/*.favorites-panel {*/
-/*    background-color: var(--color-gunmetal-dark);*/
-/*    border-bottom: 1px solid var(--color-gold-two);*/
-/*    padding: 8px 0;*/
-/*}*/
-
 .no-fav {
     max-width: 1200px;
     margin: 0 auto;
