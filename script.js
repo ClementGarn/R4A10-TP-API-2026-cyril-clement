@@ -5,6 +5,8 @@ const favorite_btn = document.getElementById("favoriteBtn");
 
 search_input.addEventListener("input", update_fav);
 
+// ── LocalStorage helpers ──────────────────────────────────────────────────────
+
 function get_fav() {
     return JSON.parse(localStorage.getItem("favoris")) || [];
 }
@@ -13,26 +15,27 @@ function save_fav(favs) {
     localStorage.setItem("favoris", JSON.stringify(favs));
 }
 
+// ── Favorite button (☆ / ★) ───────────────────────────────────────────────────
+
 function update_fav() {
     const value = search_input.value.trim();
-    const favorites = getFavorites();
+    const favorites = get_fav();
 
     if (value === "") {
-        favoriteBtn.textContent = "☆";
-        favoriteBtn.disabled = true;
-        favoriteBtn.style.backgroundColor = "grey";
+        favorite_btn.textContent = "☆";
+        favorite_btn.disabled = true;
+        favorite_btn.style.backgroundColor = "";   // retour couleur CSS par défaut (gris)
         return;
     }
 
-    favoriteBtn.disabled = false;
+    favorite_btn.disabled = false;
+    favorite_btn.style.backgroundColor = "var(--color-gold-two)";
 
     if (favorites.includes(value)) {
-        favoriteBtn.textContent = "★";
+        favorite_btn.textContent = "★";
     } else {
-        favoriteBtn.textContent = "☆";
+        favorite_btn.textContent = "☆";
     }
-
-    favoriteBtn.style.backgroundColor = "var(--color-gold-two)";
 }
 
 function toggle_fav() {
@@ -44,19 +47,75 @@ function toggle_fav() {
     if (favorites.includes(value)) {
         if (confirm("Supprimer ce favori ?")) {
             favorites = favorites.filter(f => f !== value);
+            save_fav(favorites);
         }
     } else {
-        favorites.push(value);
+        // Pas de doublon
+        if (!favorites.includes(value)) {
+            favorites.push(value);
+            save_fav(favorites);
+        }
     }
 
-    saveFavorites(favorites);
-    updateFavoriteButton();
-    displayFavorites();
+    update_fav();
+    display_favorites();
 }
 
+// ── Favorites list (navbar) ───────────────────────────────────────────────────
+
+function display_favorites() {
+    const favorites = get_fav();
+    let container = document.getElementById("favoritesPanel");
+
+    // Création du panneau s'il n'existe pas encore
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "favoritesPanel";
+        container.className = "favorites-panel";
+        // Insérer juste après le header
+        document.querySelector("header").insertAdjacentElement("afterend", container);
+    }
+
+    if (favorites.length === 0) {
+        container.innerHTML = '<p class="no-fav">(Aucune recherche favorite)</p>';
+        return;
+    }
+
+    const items = favorites.map(fav => `
+        <span class="fav-item">
+            <span class="fav-name" onclick="load_fav('${CSS.escape(fav)}')">${fav}</span>
+            <button class="fav-remove" onclick="remove_fav('${CSS.escape(fav)}')" title="Supprimer">⨷</button>
+        </span>
+    `).join("");
+
+    container.innerHTML = `<div class="fav-list">${items}</div>`;
+}
+
+function load_fav(name) {
+    // Décode les caractères éventuellement échappés par CSS.escape
+    const decoded = name;
+    search_input.value = decoded;
+    update_fav();
+    search();
+}
+
+function remove_fav(name) {
+    if (confirm("Supprimer ce favori ?")) {
+        let favorites = get_fav();
+        favorites = favorites.filter(f => f !== name);
+        save_fav(favorites);
+        // Si le champ correspond à ce favori, mettre à jour le bouton
+        if (search_input.value.trim() === name) {
+            update_fav();
+        }
+        display_favorites();
+    }
+}
+
+// ── Search & display ──────────────────────────────────────────────────────────
 
 function search() {
-    const query = document.getElementById('searchInput').value;
+    const query = search_input.value.trim();
     if (!query) return;
 
     fetch(API_URL, {
@@ -103,7 +162,6 @@ function display_item(item) {
                 <p>Prix minimum (24h): ${item.low24hPrice}₽</p>
                 <p>Dernier prix bas: ${item.lastLowPrice}₽</p>
             </div>
-
             <img src="${item.image512pxLink}" width="120">
         </div>
     `;
@@ -111,3 +169,9 @@ function display_item(item) {
     container.appendChild(list);
 }
 
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+document.addEventListener("DOMContentLoaded", () => {
+    update_fav();
+    display_favorites();
+});
