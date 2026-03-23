@@ -5,7 +5,20 @@ const favorite_btn = document.getElementById("favoriteBtn");
 
 search_input.addEventListener("input", update_fav);
 
-// ── LocalStorage helpers ──────────────────────────────────────────────────────
+document.querySelector(".favbutton").addEventListener("click", () => {
+    const panel = document.getElementById("favoritesPanel");
+    display_favorites();
+    panel.classList.toggle("open");
+});
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("searchInput");
+
+    input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            search();
+        }
+    });
+});
 
 function get_fav() {
     return JSON.parse(localStorage.getItem("favoris")) || [];
@@ -15,8 +28,6 @@ function save_fav(favs) {
     localStorage.setItem("favoris", JSON.stringify(favs));
 }
 
-// ── Favorite button (☆ / ★) ───────────────────────────────────────────────────
-
 function update_fav() {
     const value = search_input.value.trim();
     const favorites = get_fav();
@@ -24,18 +35,13 @@ function update_fav() {
     if (value === "") {
         favorite_btn.textContent = "☆";
         favorite_btn.disabled = true;
-        favorite_btn.style.backgroundColor = "";   // retour couleur CSS par défaut (gris)
+        favorite_btn.style.backgroundColor = "";
         return;
     }
 
     favorite_btn.disabled = false;
     favorite_btn.style.backgroundColor = "var(--color-gold-two)";
-
-    if (favorites.includes(value)) {
-        favorite_btn.textContent = "★";
-    } else {
-        favorite_btn.textContent = "☆";
-    }
+    favorite_btn.textContent = favorites.includes(value) ? "★" : "☆";
 }
 
 function toggle_fav() {
@@ -50,31 +56,17 @@ function toggle_fav() {
             save_fav(favorites);
         }
     } else {
-        // Pas de doublon
-        if (!favorites.includes(value)) {
-            favorites.push(value);
-            save_fav(favorites);
-        }
+        favorites.push(value);
+        save_fav(favorites);
     }
 
     update_fav();
     display_favorites();
 }
 
-// ── Favorites list (navbar) ───────────────────────────────────────────────────
-
 function display_favorites() {
     const favorites = get_fav();
-    let container = document.getElementById("favoritesPanel");
-
-    // Création du panneau s'il n'existe pas encore
-    if (!container) {
-        container = document.createElement("div");
-        container.id = "favoritesPanel";
-        container.className = "favorites-panel";
-        // Insérer juste après le header
-        document.querySelector("header").insertAdjacentElement("afterend", container);
-    }
+    const container = document.getElementById("favoritesPanel");
 
     if (favorites.length === 0) {
         container.innerHTML = '<p class="no-fav">(Aucune recherche favorite)</p>';
@@ -88,31 +80,26 @@ function display_favorites() {
         </span>
     `).join("");
 
-    container.innerHTML = `<div class="fav-list">${items}</div>`;
+    container.innerHTML = `
+        <div class="fav-header">Favoris</div>
+        <div class="fav-list">${items}</div>
+    `;
 }
 
 function load_fav(name) {
-    // Décode les caractères éventuellement échappés par CSS.escape
-    const decoded = name;
-    search_input.value = decoded;
+    search_input.value = name;
     update_fav();
     search();
 }
 
 function remove_fav(name) {
     if (confirm("Supprimer ce favori ?")) {
-        let favorites = get_fav();
-        favorites = favorites.filter(f => f !== name);
+        let favorites = get_fav().filter(f => f !== name);
         save_fav(favorites);
-        // Si le champ correspond à ce favori, mettre à jour le bouton
-        if (search_input.value.trim() === name) {
-            update_fav();
-        }
+        update_fav();
         display_favorites();
     }
 }
-
-// ── Search & display ──────────────────────────────────────────────────────────
 
 function search() {
     const query = search_input.value.trim();
@@ -120,21 +107,17 @@ function search() {
 
     fetch(API_URL, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            query: `
-                {
-                  item(gameMode: regular, lang: en, normalizedName: "${query}") {
+            query: `{
+                item(gameMode: regular, lang: en, normalizedName: "${query}") {
                     name
                     avg24hPrice
                     low24hPrice
                     lastLowPrice
                     image512pxLink
-                  }
                 }
-                `
+            }`
         })
     })
         .then(res => res.json())
@@ -143,18 +126,15 @@ function search() {
 }
 
 function display_item(item) {
-    const container = document.getElementById('results');
-    container.innerHTML = '';
+    const container = document.getElementById("results");
+    container.innerHTML = "";
 
     if (!item) {
         container.innerHTML = "<p>Aucun item trouvé</p>";
         return;
     }
 
-    const list = document.createElement('div');
-    list.className = 'item-list';
-
-    list.innerHTML = `
+    container.innerHTML = `
         <div class="item">
             <div class="item-info">
                 <h2>${item.name}</h2>
@@ -165,11 +145,7 @@ function display_item(item) {
             <img src="${item.image512pxLink}" width="120">
         </div>
     `;
-
-    container.appendChild(list);
 }
-
-// ── Init ──────────────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
     update_fav();

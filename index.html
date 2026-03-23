@@ -1,30 +1,33 @@
 <!DOCTYPE html>
-<link href="https://fonts.cdnfonts.com/css/bender" rel="stylesheet">
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Tarkov item tracker</title>
-    <script type="text/javascript" src="script.js"></script>
+    <link href="https://fonts.cdnfonts.com/css/bender" rel="stylesheet">
     <link rel="stylesheet" href="colors.css">
     <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
 </head>
+<body>
 <header>
     <div class="navbar">
-        <h1 class="title"> Tarkov item tracker </h1>
-        <button class = "favbutton">
-            Favoris
-        </button>
+        <h1 class="title">Tarkov item tracker</h1>
+        <button class="favbutton">Favoris</button>
     </div>
 </header>
-<body>
+
+<div id="favoritesPanel" class="favorites-panel"></div>
+
 <div class="container">
-<div class="search-box">
-    <label for="searchInput">item name</label>
-    <input id="searchInput" placeholder="Nom de l'item..." class="search-input">
-    <button onclick="search()" >Rechercher</button>
-    <button id="favoriteBtn" onclick="toggle_fav()" disabled>☆</button>
-</div>
-<div id="results" class="item-list"></div>
+    <div class="search-box">
+        <label for="searchInput">item name</label>
+        <form onsubmit="search(); return false;">
+            <input id="searchInput" placeholder="Nom de l'item..." class="search-input">
+            <button type="submit">Rechercher</button>
+        </form>
+        <button id="favoriteBtn" onclick="toggle_fav()" disabled>☆</button>
+    </div>
+    <div id="results" class="item-list"></div>
 </div>
 </body>
 </html>
